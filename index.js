@@ -45,6 +45,12 @@ async function run() {
         res.send(result)
     })
 
+    
+
+    
+
+
+    //get romms
     app.get('/rooms', async (req, res) =>{
         const result = await roomCollection.find().toArray()
         res.send(result)
@@ -59,6 +65,36 @@ async function run() {
     app.post('/carts', async (req, res) =>{
         const cartItem = req.body;
         const result = await cartsCollection.insertOne(cartItem)
+        res.send(result)
+    })
+
+    app.delete('/carts/:id', async (req, res) =>{
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)}
+        const result = await cartsCollection.deleteOne(query)
+        res.send(result)
+    })
+
+    app.patch('/carts/member/:id', async (req, res) =>{
+        const id = req.params.id;
+        const filter = {_id: new ObjectId(id)}
+        const updateDoc = {
+            $set: {
+                role: 'member'
+            }
+        }
+        const result = await cartsCollection.updateOne(filter, updateDoc)
+        res.send(result)
+    })
+    app.patch('/carts/user/:id', async (req, res) =>{
+        const id = req.params.id;
+        const filter = {_id: new ObjectId(id)}
+        const updateDoc = {
+            $set: {
+                role: 'user'
+            }
+        }
+        const result = await cartsCollection.updateOne(filter, updateDoc)
         res.send(result)
     })
 
