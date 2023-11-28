@@ -33,6 +33,7 @@ async function run() {
     const roomCollection = client.db("assignment12").collection("rooms");
     const cartsCollection = client.db("assignment12").collection("carts");
     const anousCollection = client.db("assignment12").collection("anous");
+    const paymentCollection = client.db("assignment12").collection("payments");
 
     //jwt related api
     app.post('/jwt', async (req, res) =>{
@@ -199,6 +200,19 @@ async function run() {
           });
     }
     )
+
+    app.post('/payments', async (req, res) =>{
+        const payment = req.body;
+        const paymentResult = await paymentCollection.insertOne(payment)
+
+        res.send(paymentResult)
+    })
+
+    app.get('/payments', async (req, res) =>{
+        const result = await paymentCollection.find().toArray()
+
+        res.send(result)
+    })
 
 
 
