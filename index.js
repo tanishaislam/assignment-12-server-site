@@ -32,6 +32,7 @@ async function run() {
     const usersCollection = client.db("assignment12").collection("users");
     const roomCollection = client.db("assignment12").collection("rooms");
     const cartsCollection = client.db("assignment12").collection("carts");
+    const anousCollection = client.db("assignment12").collection("anous");
 
     //jwt related api
     app.post('/jwt', async (req, res) =>{
@@ -42,7 +43,7 @@ async function run() {
 
     //middelware
     const verifyToken = (req, res, next) =>{
-        console.log('inside verify token', req.headers.authorization)
+        // console.log('inside verify token', req.headers.authorization)
         if(!req.headers.authorization){
             res.status(401).send({message: 'forbidded access'})
         }
@@ -82,9 +83,18 @@ async function run() {
 
     //get romms
     app.get('/rooms', async (req, res) =>{
-        const result = await roomCollection.find().toArray()
+        const page =  parseInt(req.query.page)
+        const size = 6;
+        const result = await roomCollection.find().skip(page * size).limit(size).toArray()
         res.send(result)
     })
+
+    //rooms count 
+    app.get('/roomsCount', async (req, res) =>{
+        const count = await roomCollection.estimatedDocumentCount();
+        res.send({count})
+    })
+
 
     //agriment cart 
     app.get('/carts', verifyToken, async (req, res) =>{
@@ -154,6 +164,21 @@ async function run() {
         res.send({member})
   
       })
+
+
+
+      //annousment collections
+
+      app.post('/anous', async(req, res)=>{
+        const anous = req.body;
+        const result = await anousCollection.insertOne(anous)
+        res.send(result)
+      })
+
+      app.get('/anous', verifyToken, async (req, res) =>{
+        const result = await anousCollection.find().toArray()
+        res.send(result)
+    })
 
 
 
